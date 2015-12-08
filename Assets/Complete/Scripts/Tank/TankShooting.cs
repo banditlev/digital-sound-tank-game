@@ -7,12 +7,16 @@ namespace Complete
     {
         public int m_PlayerNumber = 1;              // Used to identify the different players.
         public Rigidbody m_Shell;                   // Prefab of the shell.
+		public Rigidbody m_Duck;
         public Transform m_FireTransform;           // A child of the tank where the shells are spawned.
         public Slider m_AimSlider;                  // A child of the tank that displays the current launch force.
         public AudioSource m_ShootingAudio;         // Reference to the audio source used to play the shooting audio. NB: different to the movement audio source.
         public AudioClip m_ChargingClip;            // Audio that plays when each shot is charging up.
+		public AudioClip m_DuckChargingClip;
         public AudioClip m_FireClip;                // Audio that plays when each shot is fired.
-		public AudioClip m_rubberDuckFire;			// Audio for rubber duck bullet
+		public AudioClip m_DuckFire;			// Audio for rubber duck bullet
+
+		public bool DuckFire = false;
 
         public float m_MinLaunchForce = 15f;        // The force given to the shell if the fire button is not held.
         public float m_MaxLaunchForce = 60f;        // The force given to the shell if the fire button is held for the max charge time.
@@ -27,6 +31,7 @@ namespace Complete
         private bool m_Fired;                       // Whether or not the shell has been launched with this button press.
 
 		private Rigidbody m_Rigidbody;             	// For shooting recoil
+
 
 
         private void OnEnable()
@@ -51,7 +56,13 @@ namespace Complete
 
         private void Update ()
         {
-            // The slider should have a default value of the minimum launch force.
+			if (Input.GetKeyDown (KeyCode.Alpha1)) {
+				DuckFire = false;
+			}else if(Input.GetKeyDown (KeyCode.Alpha2)){
+				DuckFire = true;
+			}
+
+			// The slider should have a default value of the minimum launch force.
             m_AimSlider.value = m_MinLaunchForce;
 
             // If the max force has been exceeded and the shell hasn't yet been launched...
@@ -70,6 +81,9 @@ namespace Complete
 
                 // Change the clip to the charging clip and start it playing.
                 m_ShootingAudio.clip = m_ChargingClip;
+				if(DuckFire){ 
+					m_ShootingAudio.clip = m_DuckChargingClip; 
+				}
                 m_ShootingAudio.Play ();
             }
             // Otherwise, if the fire button is being held and the shell hasn't been launched yet...
@@ -100,7 +114,10 @@ namespace Complete
 			shellInstance.velocity = m_MissFireLauchForce * m_FireTransform.forward;
 
 			// Change the clip to the firing clip and play it.
-			m_ShootingAudio.clip = m_rubberDuckFire;
+			m_ShootingAudio.clip = m_FireClip;
+			if(DuckFire){ 
+				m_ShootingAudio.clip = m_DuckFire; 
+			}
 			m_ShootingAudio.Play();
 
 			// Reset the launch force.  This is a precaution in case of missing button events.
@@ -114,14 +131,26 @@ namespace Complete
             m_Fired = true;
 
             // Create an instance of the shell and store a reference to it's rigidbody.
-            Rigidbody shellInstance =
-                Instantiate (m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
-
-            // Set the shell's velocity to the launch force in the fire position's forward direction.
-            shellInstance.velocity = m_CurrentLaunchForce * m_FireTransform.forward; ;
-
-            // Change the clip to the firing clip and play it.
+			if (DuckFire) {
+				Rigidbody shellInstance =
+					Instantiate (m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody; // Change for duck prefab ???
+				
+				// Set the shell's velocity to the launch force in the fire position's forward direction.
+				shellInstance.velocity = m_CurrentLaunchForce * m_FireTransform.forward;
+			} else {
+				Rigidbody shellInstance =
+					Instantiate (m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
+				
+				// Set the shell's velocity to the launch force in the fire position's forward direction.
+				shellInstance.velocity = m_CurrentLaunchForce * m_FireTransform.forward;
+			}
+			
+			
+			// Change the clip to the firing clip and play it.
             m_ShootingAudio.clip = m_FireClip;
+			if(DuckFire){ 
+				m_ShootingAudio.clip = m_DuckFire;
+			}
             m_ShootingAudio.Play ();
 
 			DoRecoilAnimation (m_CurrentLaunchForce);
