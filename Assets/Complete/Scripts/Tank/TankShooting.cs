@@ -81,8 +81,8 @@ namespace Complete
 
                 // Change the clip to the charging clip and start it playing.
                 m_ShootingAudio.clip = m_ChargingClip;
-				if(DuckFire){ 
-					m_ShootingAudio.clip = m_DuckChargingClip; 
+				if(DuckFire){
+					m_ShootingAudio.clip = m_DuckChargingClip;
 				}
                 m_ShootingAudio.Play ();
             }
@@ -106,17 +106,27 @@ namespace Complete
 			// Set the fired flag so only Fire is only called once.
 			m_Fired = true;
 
-			// Create an instance of the shell and store a reference to it's rigidbody.
-			Rigidbody shellInstance =
-				Instantiate (m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
+			if (DuckFire) {
+				Rigidbody shellInstance =
+					Instantiate (m_Duck, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody; // Change for duck prefab ???
+				
+				// Set the shell's velocity to the launch force in the fire position's forward direction.
+				shellInstance.velocity = m_MissFireLauchForce * m_FireTransform.forward;
+				
+				shellInstance.transform.Rotate(270, 90, 0);
+			} else {
+				Rigidbody shellInstance =
+					Instantiate (m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
+				
+				// Set the shell's velocity to the launch force in the fire position's forward direction.
+				shellInstance.velocity = m_MissFireLauchForce * m_FireTransform.forward;
+			}
 
-			// Set the shell's velocity to the launch force in the fire position's forward direction.
-			shellInstance.velocity = m_MissFireLauchForce * m_FireTransform.forward;
 
 			// Change the clip to the firing clip and play it.
 			m_ShootingAudio.clip = m_FireClip;
-			if(DuckFire){ 
-				m_ShootingAudio.clip = m_DuckFire; 
+			if(DuckFire){
+				m_ShootingAudio.clip = m_DuckFire;
 			}
 			m_ShootingAudio.Play();
 
@@ -133,22 +143,24 @@ namespace Complete
             // Create an instance of the shell and store a reference to it's rigidbody.
 			if (DuckFire) {
 				Rigidbody shellInstance =
-					Instantiate (m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody; // Change for duck prefab ???
-				
+					Instantiate (m_Duck, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody; // Change for duck prefab ???
+
 				// Set the shell's velocity to the launch force in the fire position's forward direction.
 				shellInstance.velocity = m_CurrentLaunchForce * m_FireTransform.forward;
+
+				shellInstance.transform.Rotate(270, 90, 0);
 			} else {
 				Rigidbody shellInstance =
 					Instantiate (m_Shell, m_FireTransform.position, m_FireTransform.rotation) as Rigidbody;
-				
+
 				// Set the shell's velocity to the launch force in the fire position's forward direction.
 				shellInstance.velocity = m_CurrentLaunchForce * m_FireTransform.forward;
 			}
-			
-			
+
+
 			// Change the clip to the firing clip and play it.
             m_ShootingAudio.clip = m_FireClip;
-			if(DuckFire){ 
+			if(DuckFire){
 				m_ShootingAudio.clip = m_DuckFire;
 			}
             m_ShootingAudio.Play ();
