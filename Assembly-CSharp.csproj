@@ -47,6 +47,7 @@
   <ItemGroup>
      <Compile Include="Assets\Complete\Scripts\Camera\CameraControl.cs" />
      <Compile Include="Assets\Complete\Scripts\Camera\PdComClass.cs" />
+     <Compile Include="Assets\Complete\Scripts\Camera\PumpJackSound.cs" />
      <Compile Include="Assets\Complete\Scripts\Managers\GameManager.cs" />
      <Compile Include="Assets\Complete\Scripts\Managers\TankManager.cs" />
      <Compile Include="Assets\Complete\Scripts\Shell\ShellExplosion.cs" />
