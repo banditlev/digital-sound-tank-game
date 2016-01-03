@@ -16,6 +16,8 @@ namespace Complete
         public AudioClip m_FireClip;                // Audio that plays when each shot is fired.
 		public AudioClip m_DuckFire;			// Audio for rubber duck bullet
 
+
+
 		public bool DuckFire = false;
 
         public float m_MinLaunchForce = 15f;        // The force given to the shell if the fire button is not held.
@@ -33,13 +35,12 @@ namespace Complete
 		private Rigidbody m_Rigidbody;             	// For shooting recoil
 
 
-
+		
         private void OnEnable()
         {
             // When the tank is turned on, reset the launch force and the UI
             m_CurrentLaunchForce = m_MinLaunchForce;
             m_AimSlider.value = m_MinLaunchForce;
-
 			m_Rigidbody = GetComponent<Rigidbody> ();
         }
 
@@ -51,6 +52,8 @@ namespace Complete
 
 			// The rate that the launch force charges up is the range of possible forces by the max charge time.
             m_ChargeSpeed = (m_MaxLaunchForce - m_MinLaunchForce) / m_MaxChargeTime;
+
+
         }
 
 

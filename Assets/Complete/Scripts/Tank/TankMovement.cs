@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 namespace Complete
 {
@@ -13,6 +14,8 @@ namespace Complete
 		public float m_PitchRange = 0.2f;           // The amount by which the pitch of the engine noises can vary.
 		public int turboForce = 30;
 
+		public PdComClass pdCom;
+
         private string m_MovementAxisName;          // The name of the input axis for moving forward and back.
         private string m_TurnAxisName;              // The name of the input axis for turning.
         private Rigidbody m_Rigidbody;              // Reference used to move the tank.
@@ -24,6 +27,13 @@ namespace Complete
 		private float StartOfTurboMode;
 		private float lastTurboUse = 0;
 
+        private float startOfEngineRunning;
+        private bool tankRunning;
+        private float noiseVariable;
+
+        private float nextActionTime = 0.0f;
+        public float period = 0.1f;
+
         private void Awake ()
         {
             m_Rigidbody = GetComponent<Rigidbody> ();
@@ -34,7 +44,8 @@ namespace Complete
         {
             // When the tank is turned on, make sure it's not kinematic.
             m_Rigidbody.isKinematic = false;
-
+            pdCom.send("Start " + 0.5);
+            
             // Also reset the input values.
             m_MovementInputValue = 0f;
             m_TurnInputValue = 0f;
@@ -45,6 +56,7 @@ namespace Complete
         {
             // When the tank is turned off, set it to kinematic so it stops moving.
             m_Rigidbody.isKinematic = true;
+            pdCom.send("Stop");
         }
 
 
@@ -53,9 +65,14 @@ namespace Complete
             // The axes names are based on player number.
             m_MovementAxisName = "Vertical" + m_PlayerNumber;
             m_TurnAxisName = "Horizontal" + m_PlayerNumber;
-
+            InvokeRepeating("DoThrottleDown", 0.5f, 0.2F);
             // Store the original pitch of the audio source.
             m_OriginalPitch = m_MovementAudio.pitch;
+        
+			//Set the refernec to sound class
+			pdCom = FindObjectOfType(typeof(PdComClass)) as PdComClass;
+            pdCom.send("Start " + 0.5);
+            tankRunning = false;
         }
 
 
@@ -69,31 +86,32 @@ namespace Complete
 			if (Input.GetKeyDown (KeyCode.T)) {
 				StartOfTurboMode = Time.time;
 			}
-        }
+        }   
 
         private void EngineAudio ()
-        {
+        { 
             // If there is no input (the tank is stationary)...
             if (Mathf.Abs (m_MovementInputValue) < 0.1f && Mathf.Abs (m_TurnInputValue) < 0.1f)
-            {
-                // ... and if the audio source is currently playing the driving clip...
-                if (m_MovementAudio.clip == m_EngineDriving)
-                {
-                    // ... change the clip to idling and play it.
-                    m_MovementAudio.clip = m_EngineIdling;
-                    m_MovementAudio.pitch = Random.Range (m_OriginalPitch - m_PitchRange, m_OriginalPitch + m_PitchRange);
-                    m_MovementAudio.Play ();
-                }
+            {	
+                tankRunning = false;
             }
             else
             {
-                // Otherwise if the tank is moving and if the idling clip is currently playing...
-                if (m_MovementAudio.clip == m_EngineIdling)
-                {
-                    // ... change the clip to driving and play.
-                    m_MovementAudio.clip = m_EngineDriving;
-                    m_MovementAudio.pitch = Random.Range(m_OriginalPitch - m_PitchRange, m_OriginalPitch + m_PitchRange);
-                    m_MovementAudio.Play();
+                if(!tankRunning)
+                { 
+                    startOfEngineRunning = Time.time;
+                    tankRunning = true;
+                    pdCom.send("stop");
+                    
+                }else {
+                    noiseVariable = (Time.time - startOfEngineRunning); 
+                    if(noiseVariable < 1){
+                        pdCom.send("Speed " + 1);
+                    }else if(noiseVariable < 3){
+                        pdCom.send("Speed " + noiseVariable);
+                    } else {
+                        pdCom.send("Speed " + 3);
+                    }
                 }
             }
         }
@@ -139,6 +157,22 @@ namespace Complete
 				lastTurboUse = Time.time;
 			}
 		}
+
+        private void DoThrottleDown (){
+            Debug.Log("doThrottleDown called -->");
+            if(!tankRunning){
+                if (noiseVariable > 3 ){
+                    noiseVariable = 3;
+                } else if (noiseVariable < 1.0f){
+                    noiseVariable = 1.0f;
+                }
+                if (noiseVariable > 1.0f){
+                    noiseVariable = noiseVariable-0.5f;
+                }
+                pdCom.send("Speed " + noiseVariable);
+                Debug.Log("doThrottleDown in if statement -->");
+            }
+        }
 
     }
 }
