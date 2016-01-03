@@ -99,7 +99,7 @@ namespace Complete
             {
                 if(!tankRunning)
                 { 
-                    startOfEngineRunning = Time.time;
+                    startOfEngineRunning = Time.time - 1;
                     tankRunning = true;
                     pdCom.send("stop");
                     

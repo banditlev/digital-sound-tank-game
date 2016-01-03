@@ -1,0 +1,33 @@
+#N canvas 2495 368 567 372 10;
+#X obj 204 55 tgl 15 0 empty empty empty 0 -6 0 8 -262144 -1 -1 0 1
+;
+#X text 222 55 <-- connection status;
+#X obj 52 64 print;
+#X obj 97 36 netreceive 7778;
+#X floatatom 184 74 5 0 0 0 - - -;
+#X obj 194 146 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 96 325 dac~;
+#X obj 96 295 catch~ audioOut;
+#X obj 97 233 *~ 1;
+#X floatatom 118 211 5 0 0 0 - - -;
+#X obj 97 261 throw~ audioOut;
+#X obj 97 113 route Start Speed Stop;
+#X obj 102 187 SamplerVariableSpeed Harley.wav;
+#X floatatom 97 157 5 0 0 0 - - -;
+#X msg 145 156 0;
+#X connect 3 0 2 0;
+#X connect 3 0 11 0;
+#X connect 3 1 0 0;
+#X connect 3 1 4 0;
+#X connect 5 0 14 0;
+#X connect 7 0 6 0;
+#X connect 7 0 6 1;
+#X connect 8 0 10 0;
+#X connect 9 0 8 1;
+#X connect 11 0 13 0;
+#X connect 11 1 13 0;
+#X connect 11 2 5 0;
+#X connect 12 0 8 0;
+#X connect 13 0 12 0;
+#X connect 14 0 12 0;
