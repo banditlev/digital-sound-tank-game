@@ -125,7 +125,6 @@ namespace Complete
 				shellInstance.velocity = m_MissFireLauchForce * m_FireTransform.forward;
 			}
 
-
 			// Change the clip to the firing clip and play it.
 			m_ShootingAudio.clip = m_FireClip;
 			if(DuckFire){
