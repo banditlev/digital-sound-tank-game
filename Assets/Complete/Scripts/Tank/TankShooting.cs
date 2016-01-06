@@ -14,7 +14,7 @@ namespace Complete
         public AudioClip m_ChargingClip;            // Audio that plays when each shot is charging up.
 		public AudioClip m_DuckChargingClip;
         public AudioClip m_FireClip;                // Audio that plays when each shot is fired.
-		public AudioClip m_DuckFire;			// Audio for rubber duck bullet
+		public AudioClip m_DuckFire;				// Audio for rubber duck bullet
 
 
 
